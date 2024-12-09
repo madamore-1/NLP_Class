@@ -7,31 +7,31 @@ from sklearn.svm import LinearSVC
 from sklearn.metrics import accuracy_score
 import random
 
-# Download required NLTK data
+# Download  NLTK data
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('universal_tagset')
 nltk.download('sentence_polarity')
 
-# Load dataset and shuffle
+# Load and shuffle data
 from nltk.corpus import sentence_polarity
 documents = [(sent, cat) for cat in sentence_polarity.categories()
              for sent in sentence_polarity.sents(categories=cat)]
 random.shuffle(documents)
 
-# Extract the top 1500 unigrams
+# Extract 1500 unigrams
 all_words_list = [word for (sent, cat) in documents for word in sent]
 all_words = nltk.FreqDist(all_words_list)
 word_items = all_words.most_common(1500)
 word_features = [word for (word, count) in word_items]
 
-# Define unigram feature extraction
+# unigram feature extraction
 def unigram_features(document, word_features):
     document_words = set(document)
     features = {'contains({})'.format(word): (word in document_words) for word in word_features}
     return features
 
-# Define bigram feature extraction
+#  bigram feature extraction
 def bigram_features_func(document, word_features, bigram_features):
     document_words = set(document)
     document_bigrams = list(nltk.bigrams(document))
@@ -62,7 +62,7 @@ def simplified_POS_features(document):
     }
     return features
 
-# Define improved POS tagging using NLTK's Universal POS Tagger
+# improved POS tagging 
 def improved_POS_features(document):
     tagged_words = nltk.pos_tag(document, tagset='universal')
     pos_counts = Counter(tag for _, tag in tagged_words)
@@ -75,7 +75,7 @@ def improved_POS_features(document):
     }
     return features
 
-# Generate feature sets for each method
+# feature sets for each method
 unigram_featuresets = [(unigram_features(d, word_features), c) for (d, c) in documents]
 bigram_featuresets = [(bigram_features_func(d, word_features, []), c) for (d, c) in documents]
 simplified_POS_featuresets = [(simplified_POS_features(d), c) for (d, c) in documents]
